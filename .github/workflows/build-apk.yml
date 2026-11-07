@@ -1,0 +1,35 @@
+name: Build EcoFarm APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Extract project
+        run: |
+          unzip EcoFarm4_USB_Monitor_Project.zip -d /tmp/ecofarm
+
+      - name: Build APK
+        run: |
+          gradle -p /tmp/ecofarm/EcoFarm4_USB_Monitor assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EcoFarm4-USB-Monitor-APK
+          path: /tmp/ecofarm/EcoFarm4_USB_Monitor/app/build/outputs/apk/debug/app-debug.apk
+          
